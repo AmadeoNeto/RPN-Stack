@@ -1,72 +1,61 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.util.List;
 import java.util.Stack;
 
 public class RPN {
 
-    static String[] operators = new String[]{"+","-","*","/"}; // Os operadores suportados pelo compilador
-    private Stack<String> rpnStack = new Stack<String>(); // Pilha de tokens usada no cálculo da expressão
+    private Stack<Token> rpnStack = new Stack<Token>(); // Pilha de tokens usada no cálculo da expressão
 
-    // Metodo usado para avaliar uma expressão contida em um arquivo
-    public double evaluateFile(File file, boolean debug) throws FileNotFoundException{
-        Scanner fileScanner = new Scanner(file);
-
-        while(fileScanner.hasNextLine()){
-            String token = fileScanner.nextLine().trim();
-
+    public double evaluate(List<Token> tokenList){
+        
+        for (Token token : tokenList) {
             if(isOperator(token)){
                 //Caso o token seja um operador, realiza sua operação e armazena o resultado na pilha
-                double e2 = Double.parseDouble(rpnStack.pop());
-                double e1 = Double.parseDouble(rpnStack.pop());
+                double e2 = Double.parseDouble(rpnStack.pop().lexeme);
+                double e1 = Double.parseDouble(rpnStack.pop().lexeme);
 
                 double res = evaluateOperation(e1,e2,token);
 
-                if(debug){
-                    System.out.println(e1 + " " + e2 + " " + token + " = " + res);
-                }
-                rpnStack.push(Double.toString(res));
+                Token resToken = new Token(TokenType.NUM, Double.toString(res)); 
+                rpnStack.push(resToken);
             }
             else {
                 // Caso o token seja um número, o coloca na pilha
                 rpnStack.push(token);
             }
-
         }
-        fileScanner.close();
+
 
         //O resultado da operação será o ultimo elemento da pilha
-        return Double.parseDouble(rpnStack.pop());
+        return Double.parseDouble(rpnStack.pop().lexeme);
     }
 
-    // Função que verifica se um token é um operador
-    private static boolean isOperator(String exp){
-        for (String op : operators) {
-            if (op.equals(exp)){
+    private boolean isOperator(Token token) {
+        if(token.type == TokenType.MINUS || token.type == TokenType.PLUS ||
+            token.type == TokenType.STAR || token.type == TokenType.SLASH){
                 return true;
-            }
         }
-        return false;
+        else{
+            return false;
+        }
     }
 
     // Função que realiza as operações e retorna seus resultados
-    public static double evaluateOperation(double e1, double e2, String operator){
+    public static double evaluateOperation(double e1, double e2, Token operator){
         double res = 0.0;
 
-        switch (operator) {
-            case "+": 
+        switch (operator.type) {
+            case PLUS: 
                 res = e1 + e2;
                 break;
-            case "-":
+            case MINUS:
                 res = e1 - e2;
                 break;
-            case "*":
+            case STAR:
                 res = e1 * e2;
                 break;
-            case "/":
+            case SLASH:
                 res = e1 / e2;
                 break;
- 
         }
         return res;
     }
