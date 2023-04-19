@@ -30,13 +30,7 @@ public class RPN {
     }
 
     private boolean isOperator(Token token) {
-        if(token.type == TokenType.MINUS || token.type == TokenType.PLUS ||
-            token.type == TokenType.STAR || token.type == TokenType.SLASH){
-                return true;
-        }
-        else{
-            return false;
-        }
+        return Regex.isOP(token.lexeme);
     }
 
     // Função que realiza as operações e retorna seus resultados

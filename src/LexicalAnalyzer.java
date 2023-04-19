@@ -41,7 +41,7 @@ public class LexicalAnalyzer {
     private Token tokenize(String lexeme) throws CharConversionException{
         TokenType type = null;
 
-        if(isOperator(lexeme)){
+        if(Regex.isOP(lexeme)){
             switch (lexeme) {
                 case "+":
                     type = TokenType.PLUS;
@@ -56,7 +56,7 @@ public class LexicalAnalyzer {
                     type = TokenType.SLASH;
                     break;
             }
-        } else if (isNum(lexeme)){
+        } else if (Regex.isNum(lexeme)){
             type = TokenType.NUM;
         } else {
             throw new CharConversionException("Unexpected character: " + lexeme.toString());
@@ -64,24 +64,4 @@ public class LexicalAnalyzer {
 
         return new Token(type,lexeme);
     }
-
-    // Função que verifica se um lexeme é um operador
-    private boolean isOperator(String exp){
-        for (String op : OPERATORS) {
-            if (op.equals(exp)){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Função que verifica se um lexeme é numérico
-    private boolean isNum(String exp){
-        try{
-            Double.parseDouble(exp);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    } 
 }
